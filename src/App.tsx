@@ -14,7 +14,6 @@ export const App: React.FC = () => {
   // #region useState
   const [todos, setTodos] = useState<Todo[]>([]);
   const [allTodos, setAllTodos] = useState<Todo[]>([]);
-  const [selectedTodos, setSelectedTodos] = useState<number[]>([]);
   const [selectedLink, setSelectedLink] = useState(FilterType.All);
   const [errorButton, setErrorButton] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -24,7 +23,6 @@ export const App: React.FC = () => {
   // #endregion
 
   // #region useEffect
-
   useEffect(() => {
     getTodos()
       .then(setAllTodos)
@@ -32,14 +30,6 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to load todos');
       });
   }, []);
-
-  // useEffect(() => {
-  //   if (allTodos) {
-  //     const notCompleted = allTodos.filter(todo => !todo.completed);
-
-  //     setTodosCounter(notCompleted.length);
-  //   }
-  // }, [allTodos]);
 
   useEffect(() => {
     switch (selectedLink) {
@@ -63,6 +53,7 @@ export const App: React.FC = () => {
 
       return () => clearTimeout(timer);
     }
+
     return;
   }, [errorMessage]);
   // #endregion
@@ -88,7 +79,6 @@ export const App: React.FC = () => {
         {/* This is a completed todo */}
         <TodoList
           todos={todos}
-          selectedTodos={selectedTodos}
           allTodos={allTodos}
           setTodos={setTodos}
           setAllTodos={setAllTodos}
@@ -102,16 +92,13 @@ export const App: React.FC = () => {
         {/* Hide the footer if there are no todos */}
         {allTodos.length > 0 && (
           <Footer
-            errorMessage={errorMessage}
             todosCounter={todosCounter}
             selectedLink={selectedLink}
             setSelectedLink={setSelectedLink}
             todos={todos}
-            allTodos={allTodos}
             setTodos={setTodos}
             setAllTodos={setAllTodos}
             setErrorMessage={setErrorMessage}
-            selectedTodos={selectedTodos}
           />
         )}
       </div>

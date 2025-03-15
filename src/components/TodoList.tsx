@@ -4,11 +4,10 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
-  selectedTodos: number[];
   setTodos: (arg: Todo[]) => void;
   allTodos: Todo[];
   setAllTodos: (arg: Todo[]) => void;
-  loadingTodo: any;
+  loadingTodo: boolean;
   setErrorMessage: (arg: string) => void;
   setLoadingTodo: (arg: boolean) => void;
   loadingTodoId: number;
@@ -17,7 +16,6 @@ type Props = {
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  selectedTodos,
   allTodos,
   setTodos,
   setAllTodos,
@@ -33,7 +31,6 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           key={todo.id}
           todo={todo}
-          selectedTodos={selectedTodos}
           todos={todos}
           setTodos={setTodos}
           allTodos={allTodos}

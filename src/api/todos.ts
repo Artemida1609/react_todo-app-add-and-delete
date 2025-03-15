@@ -8,12 +8,12 @@ export const getTodos = () => {
 };
 
 // Add more methods here
-export const addTodo = ({ userId, title }: Omit<Todo, "completed" | "id">) => {
-  const body = { userId, title, completed: false};
+export const addTodo = ({ userId, title }: Omit<Todo, 'completed' | 'id'>) => {
+  const body = { userId, title, completed: false };
 
   return client.post<Todo>('/todos', body);
-}
+};
 
 export const deleteTodo = (id: number) => {
-  return client.delete(`/todos/${id}`)
-}
+  return client.delete(`/todos/${id}`);
+};

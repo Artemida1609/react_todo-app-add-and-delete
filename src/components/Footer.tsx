@@ -9,12 +9,9 @@ type Props = {
   selectedLink: FilterType;
   setSelectedLink: (arg: FilterType) => void;
   todos: Todo[];
-  allTodos: Todo[];
   setTodos: (arg: Todo[]) => void;
   setAllTodos: (arg: Todo[]) => void;
-  errorMessage: string;
   setErrorMessage: (arg: string) => void;
-  selectedTodos: number[];
 };
 
 export const Footer: React.FC<Props> = ({
@@ -22,43 +19,39 @@ export const Footer: React.FC<Props> = ({
   selectedLink,
   setSelectedLink,
   todos,
-  allTodos,
   setTodos,
   setAllTodos,
-  errorMessage,
   setErrorMessage,
-  selectedTodos,
 }) => {
-  const findSelected = () => {
-    return todos.filter(todo => selectedTodos.includes(todo.id));
-  };
-
-  // const fetchTodos = () => {
-  //   getTodos()
-  //     .then(fetchedTodos => {
-  //       setTodos(fetchedTodos);
-  //       setAllTodos(fetchedTodos);
-  //     })
-  //     .catch(() => setErrorMessage('Unable to fetch todos'));
-  // };
-
   //#region handle functions
   const handleClearCompleted = () => {
-    const selected = findSelected();
-    const completedTodos = todos.filter(todo => todo.completed);
-    const allCompletedTodos = [...completedTodos, ...selected];
+    const allCompletedTodos = todos.filter(todo => todo.completed);
 
-    Promise.allSettled(
-    allCompletedTodos.map(todo => deleteTodo(todo.id))
-  )
-      .then(() => {
-        const activeTodos = todos.filter(
-          todo => !todo.completed && !selected.includes(todo),
+    Promise.allSettled(allCompletedTodos.map(todo => deleteTodo(todo.id))).then(
+      results => {
+        // Отримуємо ID тудушок, які НЕ вдалося видалити
+        const failedIds = results
+          .map((result, index) =>
+            result.status === 'rejected' ? allCompletedTodos[index].id : null,
+          )
+          .filter((id): id is number => id !== null);
+        // Отримуємо тільки ті тудушки які НЕ видалились успішно
+        const successfullyDeletedIds = allCompletedTodos
+          .map(todo => todo.id)
+          .filter(id => !failedIds.includes(id));
+
+        const updatedTodos = todos.filter(
+          todo => !successfullyDeletedIds.includes(todo.id),
         );
-        setTodos(activeTodos);
-        setAllTodos(activeTodos);
-      })
-      .catch(() => setErrorMessage(`Unable to delete a todo`));
+        // Встановлюємо тудушки
+        setTodos(updatedTodos);
+        setAllTodos(updatedTodos);
+        // Якщо є тудушки зі статусом 'rejected' виводимо помилку
+        if (failedIds.length > 0) {
+          setErrorMessage('Unable to delete a todo');
+        }
+      },
+    );
   };
   //#endregion
 
@@ -91,14 +84,10 @@ export const Footer: React.FC<Props> = ({
       </nav>
 
       {/* this button should be disabled if there are no completed todos */}
-      {/* {(todos.some(todo => todo.completed) || allTodos.filter(todo => todo.completed).length > 0) && ( */}
       <button
         type="button"
         className="todoapp__clear-completed"
-        disabled={
-          !todos.some(todo => todo.completed) ||
-          allTodos.filter(todo => todo.completed).length === 0
-        }
+        disabled={!todos.some(todo => todo.completed)}
         data-cy="ClearCompletedButton"
         onClick={handleClearCompleted}
       >

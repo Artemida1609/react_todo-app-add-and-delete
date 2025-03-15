@@ -5,12 +5,11 @@ import { deleteTodo } from '../api/todos';
 
 type Props = {
   todo: Todo;
-  selectedTodos: number[];
   todos: Todo[];
   setTodos: (arg: Todo[]) => void;
   allTodos: Todo[];
   setAllTodos: (arg: Todo[]) => void;
-  loadingTodo: any;
+  loadingTodo: boolean;
   setErrorMessage: (arg: string) => void;
   setLoadingTodo: (arg: boolean) => void;
   loadingTodoId: number;
@@ -19,7 +18,6 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  selectedTodos,
   todos,
   setTodos,
   allTodos,
@@ -30,26 +28,22 @@ export const TodoItem: React.FC<Props> = ({
   loadingTodoId,
   setLoadingTodoId,
 }) => {
-
-  // useEffect(() => {
-
-  // }, [selectedTodos]);
-
   //#region handle functions
   const handleDeleteButton = (todoId: number) => {
+    // Встановлюємо тудушку на load та todoId
     setLoadingTodo(true);
     setLoadingTodoId(todoId);
+
     deleteTodo(todoId)
       .then(() => {
-        const filtered = allTodos.filter(todo => todo.id !== todoId);
+        const filtered = allTodos.filter(todoItem => todoItem.id !== todoId);
+
         setTodos([...filtered]);
         setAllTodos([...filtered]);
         setLoadingTodo(false);
         setLoadingTodoId(-1);
       })
       .catch(() => setErrorMessage(`Unable to delete a todo`));
-
-    // setAllTodos(filteredList);
   };
 
   const handleToggleTodo = () => {
@@ -67,7 +61,7 @@ export const TodoItem: React.FC<Props> = ({
     <div
       data-cy="Todo"
       className={classNames('todo', {
-        completed: selectedTodos.includes(todo.id) || todo.completed,
+        completed: todo.completed,
       })}
     >
       <label className="todo__status-label" aria-label="toggle todo completion">
@@ -75,7 +69,7 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className={classNames('todo__status')}
-          checked={selectedTodos.includes(todo.id) || todo.completed}
+          checked={todo.completed}
           onChange={handleToggleTodo}
         />
       </label>
@@ -95,8 +89,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active':
-            loadingTodo && todo.id === loadingTodoId
+          'is-active': loadingTodo && todo.id === loadingTodoId,
         })}
       >
         <div className="modal-background has-background-white-ter" />

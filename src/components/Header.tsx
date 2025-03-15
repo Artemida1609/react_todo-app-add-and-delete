@@ -29,6 +29,7 @@ export const Header: React.FC<Props> = ({
     event.preventDefault();
     if (inputValue.trim().length === 0) {
       setErrorMessage('Title should not be empty');
+
       return;
     } else {
       const newTodo: Omit<Todo, 'id' | 'completed'> = {
@@ -41,6 +42,7 @@ export const Header: React.FC<Props> = ({
         title: inputValue.trim(),
         completed: false,
       };
+
       setDisabled(true);
       setLoadingTodo(true);
       setLoadingTodoId(tempTodo.id);
@@ -50,6 +52,7 @@ export const Header: React.FC<Props> = ({
       addTodo(newTodo)
         .then(newTodoFromServer => {
           const todos = allTodos.slice(0, allTodos.length);
+
           setAllTodos([...todos, newTodoFromServer]);
           setEnableCounter(true);
           setLoadingTodo(false);
@@ -77,7 +80,7 @@ export const Header: React.FC<Props> = ({
     if (enableCounter) {
       setTodosCounter(allTodos.filter(todo => !todo.completed).length);
     }
-  }, [allTodos]);
+  }, [allTodos, enableCounter, setTodosCounter]);
   //#endregion
 
   return (
