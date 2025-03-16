@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-// import React, { useEffect } from 'react';
 import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
 
@@ -17,7 +16,7 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo,
+  todo: { title, id, completed },
   todos,
   setTodos,
   allTodos,
@@ -30,7 +29,6 @@ export const TodoItem: React.FC<Props> = ({
 }) => {
   //#region handle functions
   const handleDeleteButton = (todoId: number) => {
-    // Встановлюємо тудушку на load та todoId
     setLoadingTodo(true);
     setLoadingTodoId(todoId);
 
@@ -47,9 +45,8 @@ export const TodoItem: React.FC<Props> = ({
   };
 
   const handleToggleTodo = () => {
-    //toggle completed or not todo
     const updatedTodos = todos.map(t =>
-      t.id === todo.id ? { ...t, completed: !t.completed } : t,
+      t.id === id ? { ...t, completed: !t.completed } : t,
     );
 
     setTodos(updatedTodos);
@@ -61,7 +58,7 @@ export const TodoItem: React.FC<Props> = ({
     <div
       data-cy="Todo"
       className={classNames('todo', {
-        completed: todo.completed,
+        completed: completed,
       })}
     >
       <label className="todo__status-label" aria-label="toggle todo completion">
@@ -69,19 +66,19 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className={classNames('todo__status')}
-          checked={todo.completed}
+          checked={completed}
           onChange={handleToggleTodo}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => handleDeleteButton(todo.id)}
+        onClick={() => handleDeleteButton(id)}
       >
         ×
       </button>
@@ -89,7 +86,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': loadingTodo && todo.id === loadingTodoId,
+          'is-active': loadingTodo && id === loadingTodoId,
         })}
       >
         <div className="modal-background has-background-white-ter" />

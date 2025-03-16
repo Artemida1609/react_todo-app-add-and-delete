@@ -29,13 +29,11 @@ export const Footer: React.FC<Props> = ({
 
     Promise.allSettled(allCompletedTodos.map(todo => deleteTodo(todo.id))).then(
       results => {
-        // Отримуємо ID тудушок, які НЕ вдалося видалити
         const failedIds = results
           .map((result, index) =>
             result.status === 'rejected' ? allCompletedTodos[index].id : null,
           )
           .filter((id): id is number => id !== null);
-        // Отримуємо тільки ті тудушки які НЕ видалились успішно
         const successfullyDeletedIds = allCompletedTodos
           .map(todo => todo.id)
           .filter(id => !failedIds.includes(id));
@@ -43,10 +41,9 @@ export const Footer: React.FC<Props> = ({
         const updatedTodos = todos.filter(
           todo => !successfullyDeletedIds.includes(todo.id),
         );
-        // Встановлюємо тудушки
+
         setTodos(updatedTodos);
         setAllTodos(updatedTodos);
-        // Якщо є тудушки зі статусом 'rejected' виводимо помилку
         if (failedIds.length > 0) {
           setErrorMessage('Unable to delete a todo');
         }
@@ -61,8 +58,6 @@ export const Footer: React.FC<Props> = ({
         {`${todosCounter} items left`}
       </span>
 
-      {/* Active link should have the 'selected' class */}
-
       <nav className="filter" data-cy="Filter">
         {Object.values(FilterType).map(type => {
           return (
@@ -73,9 +68,7 @@ export const Footer: React.FC<Props> = ({
                 selected: selectedLink === type,
               })}
               data-cy={type === 'All' ? 'FilterLinkAll' : `FilterLink${type}`}
-              onClick={() => {
-                setSelectedLink(type);
-              }}
+              onClick={() => setSelectedLink(type)}
             >
               {type}
             </a>
@@ -83,7 +76,6 @@ export const Footer: React.FC<Props> = ({
         })}
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
